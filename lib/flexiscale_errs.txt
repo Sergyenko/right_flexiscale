@@ -1,0 +1,27 @@
+/usr/lib/ruby/1.8/timeout.rb:54:in `fill_rbuff': execution expired (Timeout::Error)
+        from /usr/lib/ruby/1.8/openssl/buffering.rb:106:in `gets'
+        from /var/lib/gems/1.8/gems/httpclient-2.1.2/lib/httpclient.rb:1080:in `gets'
+        from /var/lib/gems/1.8/gems/httpclient-2.1.2/lib/httpclient.rb:1581:in `parse_header'
+        from /usr/lib/ruby/1.8/timeout.rb:56:in `timeout'
+        from /usr/lib/ruby/1.8/timeout.rb:76:in `timeout'
+        from /var/lib/gems/1.8/gems/httpclient-2.1.2/lib/httpclient.rb:1579:in `parse_header'
+        from /var/lib/gems/1.8/gems/httpclient-2.1.2/lib/httpclient.rb:1537:in `read_header'
+        from /var/lib/gems/1.8/gems/httpclient-2.1.2/lib/httpclient.rb:1356:in `get_status'
+         ... 10 levels...
+        from /var/lib/gems/1.8/gems/soap4r-1.5.8/lib/soap/rpc/driver.rb:181:in `call'
+        from (eval):6:in `login'
+        from /home/odesk/rails/right_flexiscale/right_flexiscale.rb:38:in `login'
+        from /home/odesk/rails/right_flexiscale/right_flexiscale.rb:291
+        
+#<SOAP::FaultError: Invalid Server>
+
+#<SOAP::FaultError: Invalid Server Name, must only contain A-Z,a-z, 0-9, _ or ->
+#<SOAP::FaultError: An unexpected error occurred, please contact FlexiScale support with the reference "20080615130632-77.66.223.61" for more information>
+
+#<SOAP::FaultError: Bad num of processors>
+#<SOAP::FaultError: Server "kkkkkk" not found>
+#<SOAP::FaultError: Server is currently stopping/stopped>
+#<SOAP::FaultError: Server Not Stopped>
+
+#<SOAP::FaultError: InvalidCredentials> # wrong creds
+#<SOAP::FaultError: Your credentials are unsuitable or missing.> # not logged in
