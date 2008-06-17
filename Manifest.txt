@@ -8,5 +8,6 @@ lib/api/Flexiscale APIDriver.rb
 lib/api/Flexiscale APIMappingRegistry.rb
 lib/api/Flexiscale API.rb
 lib/api/right_flexiscale_api.rb
+lib/api/benchmark_fix.rb
 test/test_helper.rb
 test/test_right_flexiscale.rb

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2008 RightScale Inc
+# Copyright (c) 2007 RightScale Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -20,23 +20,20 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-
-$:.unshift(File.dirname(__FILE__)) 
-$:.unshift(File.dirname(__FILE__) + "/api") 
-
-require 'rubygems'
-gem     'soap4r'
-require 'benchmark'
-require 'api/benchmark_fix'
-require 'api/right_flexiscale_api'
+#
 
 
-module RightFlexiscale
-  module VERSION #:nodoc:
-    MAJOR = 0
-    MINOR = 0
-    TINY  = 1
-    
-    STRING = [MAJOR, MINOR, TINY].join('.')
+# A hack because there's a bug in add! in Benchmark::Tms
+module Benchmark  #:nodoc:
+  class Tms #:nodoc:
+    def add!(&blk)
+      t = Benchmark::measure(&blk)
+      @utime  = utime + t.utime
+      @stime  = stime + t.stime
+      @cutime = cutime + t.cutime
+      @cstime = cstime + t.cstime
+      @real   = real + t.real
+      self
+    end
   end
 end
