@@ -83,7 +83,6 @@ module RightFlexiscale
   #   1. list_firewall_templates dies if any list value is defined (ask Flexiscale)
   #   2. find out job statuses text names (ask Flexiscale)
   #   3. create_server does not allow spaces in server name (but web interface does) (ask Flexiscale)
-  #   4. server[:initial_password] is stored as 'password\n'. Do we need to remove tailing '\n'?
   #
   class Api
     attr_reader :params

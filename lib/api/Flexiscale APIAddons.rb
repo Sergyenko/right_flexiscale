@@ -139,7 +139,7 @@ module FlexiScale
                         '4' => 'stopping',
                         '5' => 'stopped' }
     def to_handy_hash
-      ::FlexiScale::attrs_to_hash(self, :disk_capacity, :disks, :initial_password, :ip_addresses, 
+      ::FlexiScale::attrs_to_hash(self, :disk_capacity, :disks, :ip_addresses, 
                                         :memory, :modified, :network_interfaces, :package_id, 
                                         :processors, :status, :uptime ).merge(
         :fxs_id     => self.server_id,
@@ -147,7 +147,8 @@ module FlexiScale
         :fxs_status => self.status,
         :status     => STATUS_IN_WORDS[self.status],
         :image_id   => self.operating_system_image.operating_system_image_id,
-        :image_name => self.operating_system_image.operating_system_image_name
+        :image_name => self.operating_system_image.operating_system_image_name,
+        :initial_password => self.initial_password.chop
       )
     end
   end
