@@ -43,7 +43,7 @@ module RightFlexiscale
   # Web service.
   # For explanations of the semantics
   # of each call, please refer to Flexiscale's documentation at
-  # http://api.flexiscale.com
+  # https://api.flexiscale.com
   #
   # Examples:
   #
@@ -69,6 +69,7 @@ module RightFlexiscale
   #
   #  # stop and destroy server
   #  job_id = flexiscale.stop_server('my_awesome_server')
+  #  
   #  if flexiscale.wait_for_jobs(job_id)
   #    flexiscale.destroy_server('my_awesome_server')
   #  end
@@ -81,6 +82,7 @@ module RightFlexiscale
   # 
   #   1. list_firewall_templates dies if any list value is defined (ask Flexiscale)
   #   2. find out job statuses text names (ask Flexiscale)
+  #   3. create_server does not allow spaces in server name (but web interface does) (ask Flexiscale)
   #
   class Api
     attr_reader :params
@@ -95,7 +97,7 @@ module RightFlexiscale
       @@bench.service
     end
     
-    FLEXISCALE_WSDL      = "https://api.flexiscale.com/current/Flexiscale.wsdl"
+    FLEXISCALE_WSDL = "https://api.flexiscale.com/current/Flexiscale.wsdl"
 
     SERVER_STOP_SHUTDOWN = 1
     SERVER_STOP_POWEROFF = 2
