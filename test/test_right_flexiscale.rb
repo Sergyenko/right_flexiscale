@@ -3,7 +3,8 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 class TestRightFlexiscale < Test::Unit::TestCase
 
   def setup
-    @flexiscale = RightFlexiscale::Api.new
+    @flexiscale = RightFlexiscale::Api.new(TestFlexiscaleCredentials.username, 
+                                           TestFlexiscaleCredentials.password)
     @test_server_name = "right_flexiscale_awesome_test_server_1234567890"
   end
   

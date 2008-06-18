@@ -106,11 +106,12 @@ module RightFlexiscale
     DEFAULT_HTTP_RECEIVE_TIMEOUT = 300
 
     # Create a new interface to Flexiscale API.
+    # If _username_ or/and _password_ are undefined then 
+    # ENV['FLEXISCALE_USERNAME'] and ENV['FLEXISCALE_PASSWORD'] are used.
     # 
-    #  params:
-    #   :raw_response - return SOAP objects as is
-    #   :logger       - logger object (STDOUT is used by default)
-    #   :skip_logging - log nothing 
+    #  - params: :raw_response - return SOAP objects as is
+    #            :logger       - logger object (STDOUT is used by default)
+    #            :skip_logging - log nothing 
     #
     #  flexiscale = RightFlexiscale::Api.new(username, password)
     #  flexiscale.list_packages #=> [{:fxs_id => 40175,
@@ -121,7 +122,7 @@ module RightFlexiscale
     #                                  @package_id   = 40175,
     #                                  @package_name = "rightscale">]
     #
-    def initialize(username, password, params={})
+    def initialize(username=nil, password=nil, params={})
       @username  = username || ENV['FLEXISCALE_USERNAME']
       @password  = password || ENV['FLEXISCALE_PASSWORD']
       @params    = params
@@ -164,10 +165,9 @@ module RightFlexiscale
     
     # Request Flexiscale. 
     # Performs a retry on login problems (timeouts etc).
-    #  params:
-    #    :block    - block of code (is used when retry) 
-    #    :no_retry - do not retry on error
-    #    :no_login - do not auto login
+    #  - params:  :block    - block of code (is used when retry) 
+    #             :no_retry - do not retry on error
+    #             :no_login - do not auto login
     #
     def perform_request(params={}, &block) # :nodoc:
       result = nil
@@ -248,7 +248,7 @@ module RightFlexiscale
     end  
 
     # List packages. Returns an array of packages.
-    # +list+ is an array of ids.
+    # _List_ is an array of ids.
     #
     #  flexiscale.list_packages #=> 
     #       [{:fxs_id => 40175, 
@@ -266,7 +266,7 @@ module RightFlexiscale
     #----------------------------------------
 
     # List servers. Returns an array of servers.
-    # +list+ is an array of servers names.
+    # _List_ is an array of servers names.
     # 
     #  flexiscale.list_servers #=>
     #       [{:memory             => 512,
@@ -294,7 +294,7 @@ module RightFlexiscale
     end
 
     # Create a server. Returns a new +server_id+. 
-    # (+Memory+ in MB, +disk_capacity+ in GB)
+    # (_Memory_ in MB, _disk_capacity_ in GB)
     # 
     #  flexiscale.create_server('my_awesome_server', 40175, 1, 512, 20, 27, 1552) #=> 1343
     #
@@ -340,7 +340,7 @@ module RightFlexiscale
 
     # Start a server.
     # The response is returned as a integer which is the job number  of the request,
-    # this can be looked up using wait_for_jobs and list_jobs.
+    # this can be looked up using _wait_for_jobs_ and _list_jobs_.
     # 
     #  flexiscale.start_server('my_awesome_server') #=> 11034
     # 
@@ -353,7 +353,7 @@ module RightFlexiscale
 
     # Reboot a server.
     # The response is returned as a integer which is the job number  of the request,
-    # this can be looked up using wait_for_jobs and list_jobs.
+    # this can be looked up using _wait_for_jobs_ and _list_jobs_.
     #
     #  flexiscale.reboot_server('my_awesome_server') #=> 11035
     #  
@@ -366,10 +366,9 @@ module RightFlexiscale
 
     # Stop a server. 
     # The response is returned as a integer which is the job number  of the request,
-    # this can be looked up using wait_for_jobs and list_jobs.
+    # this can be looked up using _wait_for_jobs_ and _list_jobs_.
     # 
-    #  - method = (:shutdown || RightFlexiscale::SERVER_STOP_SHUTDOWN) || 
-    #             (:poweroff || RightFlexiscale::SERVER_STOP_POWEROFF)
+    #  - method:  (:shutdown || RightFlexiscale::SERVER_STOP_SHUTDOWN) || (:poweroff || RightFlexiscale::SERVER_STOP_POWEROFF)
     #             
     #  flexiscale.stop_server('my_awesome_server') #=> 11036
     #  
@@ -385,7 +384,7 @@ module RightFlexiscale
 
     # Stop and Restart an existing server.
     # The response is returned as a integer which is the job number of the request, 
-    # this can be looked up using wait_for_jobs and list_jobs.
+    # this can be looked up using _wait_for_jobs_ and _list_jobs_.
     #
     #  flexiscale.stop_start_server('my_awesome_server') #=> 11037
     #  
@@ -413,7 +412,7 @@ module RightFlexiscale
     #----------------------------------------
 
     # List disks. Returns an array of disks.
-    # +list+ is an array of ids.
+    # _List_ is an array of ids.
     #
     #  flexiscale.list_disks #=>
     #        [{:capacity   => 20,
@@ -436,7 +435,7 @@ module RightFlexiscale
     #----------------------------------------
 
     # List jobs. Returns an array of jobs.
-    # +list+ is an array of ids.
+    # _List_ is an array of ids.
     #
     #  flexiscale.list_jobs #=>
     #        [{:fxs_status  => 2,
@@ -457,7 +456,7 @@ module RightFlexiscale
     end
 
     # List running jobs. Returns an array of running jobs.
-    # +list+ is an array of ids.
+    # _List_ is an array of ids.
     # 
     #  flexiscale.list_running_jobs #=> []
     #
@@ -471,7 +470,7 @@ module RightFlexiscale
     # Wait for jobs completion.
     # The command returns a boolean value, if +true+ all jobs have been completed
     # successfully, if +false+ one or more jobs failed.
-    # +list+ is an array of ids.
+    # _List_ is an array of ids.
     #
     #  flexiscale.wait_for_jobs(1132, 1133) #=> true
     #  
@@ -487,8 +486,8 @@ module RightFlexiscale
     end
 
     # List a filtered jobs. Returns an array of jobs.
-    #  - order_by:  :+status+ || :job_id || :type_id || :started || :finished || :description || :parent_job
-    #  - direction: :+asc+ || :desc
+    #  - order_by:   :status || :job_id || :type_id || :started || :finished || :description || :parent_job
+    #  - direction:  :asc || :desc
     #  
     #  flexiscale.filter(100, :status, :desc ) #=>
     #        [{:fxs_status  => 2,
@@ -537,7 +536,7 @@ module RightFlexiscale
     #----------------------------------------
 
     # List network interfaces. Returns an array of nics.
-    # +list+ is an array of ids.
+    # _List_ is an array of ids.
     #
     #  flexiscale.list_network_interfaces #=>
     #        [{:server_id   => 1322,
@@ -553,7 +552,7 @@ module RightFlexiscale
     end
 
     # List vlans. Returns an array of vlans.
-    # +list+ is an array of ids.
+    # _List_ is an array of ids.
     # 
     #  flexiscale.list_vlans #=>
     #        [{:fxs_id => 552, 
@@ -567,7 +566,7 @@ module RightFlexiscale
     end
 
     # List IpBlocks. Returns an array of ip_blocks.
-    # +list+ is an array of ids.
+    # _List_ is an array of ids.
     # 
     #  flexiscale.list_ip_blocks #=>
     #        [{:type             => 29,
@@ -588,7 +587,8 @@ module RightFlexiscale
     #----------------------------------------
 
     # List debit items.
-    #  - item_type: :virtual_server || :vlan || :disk_space
+    # 
+    #  - item_type:  :virtual_server || :vlan || :disk_space
     #  
     #  flexiscale.list_debit_items(:virtual_server, 1322) #=>
     #        [{:description => "1 Hour of uptime for server kd test 1",
@@ -640,7 +640,7 @@ module RightFlexiscale
     end
 
     # List firewall rulles.
-    #  -direction: nil || :in || :out
+    #  - direction:  nil || :in || :out
     #
     # https://api.flexiscale.com/current/doc/list_firewall_rules.html
     def list_firewall_rules(firewall_id, direction=nil)
@@ -696,7 +696,7 @@ module RightFlexiscale
     end
 
     # List firewall templates.
-    # (+list+ DOES NOT WORK)
+    # (_List_ DOES NOT WORK)
     #
     #  flexiscale.list_firewall_templates #=>
     #        [{:fxs_id=>1, :name=>"Linux Web Server",   :default_policy=>"REJECT"},
@@ -711,7 +711,7 @@ module RightFlexiscale
     end
 
     # List firewall template rules.
-    #  - direction: nil || :in || :out
+    #  - direction:  nil || :in || :out
     #
     # https://api.flexiscale.com/current/doc/list_firewall_template_rules.html
     def list_firewall_template_rules(firewall_template_id, direction=nil)
