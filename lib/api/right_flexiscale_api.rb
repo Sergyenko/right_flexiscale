@@ -149,8 +149,7 @@ module RightFlexiscale
     
     def log_error(e, level=:error) # :nodoc:
       unless @params[:skip_logging]
-        # Mhhh... it seems the backtrace is [] or nil for SOAP::FaultError...
-        trace   = e.backtrace.to_a.join("\n")
+        trace   = e.backtrace.join("\n")
         message = "#{e.class.name}: #{e.message}\n#{trace}"
         @params[:logger].__send__(level, message)
       end
@@ -203,7 +202,11 @@ module RightFlexiscale
           if e.is_a?(SOAP::FaultError)
             # ... as RightFlexiscale::FxsError
             fxs_error = FxsError.new(e.message)
-#            fxs_error.set_backtrace(e.backtrace)
+            # Create a backtrace stack from a scratch if it is abcent...
+            # It does not show the exact point of error but a stack of methods at least.
+            # (not sure why but SOAP::FaultError has backtrace empty, may be due to threads usage)
+            fxs_error.set_backtrace(caller(0)) unless fxs_error.backtrace && !fxs_error.backtrace.empty?
+            # log and raise error
             log_error fxs_error
             raise fxs_error
           else
