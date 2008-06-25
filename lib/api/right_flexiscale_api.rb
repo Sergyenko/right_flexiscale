@@ -30,7 +30,7 @@ module RightFlexiscale
   class FxsError < RuntimeError 
   end
   
-  class FxsBenchmarkingBlock #:nodoc:
+  class FxsBenchmarkingBlock # :nodoc:
     attr_accessor :service
     def initialize
       # Benchmark::Tms instance for service (Ec2, S3, or SQS) access benchmarking.
@@ -77,13 +77,6 @@ module RightFlexiscale
   # Error handling: all operations raise an RightFlexiscale::FxsError in case
   # of problems.
   #
-  # ------------------
-  # Known problems:
-  # 
-  #   1. list_firewall_templates dies if any list value is defined (ask Flexiscale)
-  #   2. find out job statuses text names (ask Flexiscale)
-  #   3. create_server does not allow spaces in server name (but web interface does) (ask Flexiscale)
-  #
   class Api
     attr_reader :params
     attr_reader :logged_in
@@ -93,7 +86,7 @@ module RightFlexiscale
     attr_reader :last_raw_response
 
     @@bench = FxsBenchmarkingBlock.new
-    def self.bench_service
+    def self.bench_service # :nodoc:
       @@bench.service
     end
     
@@ -114,13 +107,13 @@ module RightFlexiscale
     #            :skip_logging - log nothing 
     #
     #  flexiscale = RightFlexiscale::Api.new(username, password)
-    #  flexiscale.list_packages #=> [{:fxs_id => 40175,
-    #                                 :name   => "rightscale"}]
+    #  flexiscale.list_packages #=> [{:fxs_id => 12345,
+    #                                 :name   => "package"}]
     #
     #  flexiscale = RightFlexiscale::Api.new(username, password, :raw_response=>true) #=> 
     #  flexiscale.list_packages #=> [#<FlexiScale::Package:0xb78a1904
-    #                                  @package_id   = 40175,
-    #                                  @package_name = "rightscale">]
+    #                                  @package_id   = 12345,
+    #                                  @package_name = "package">]
     #
     def initialize(username=nil, password=nil, params={})
       @username  = username || ENV['FLEXISCALE_USERNAME']
@@ -232,6 +225,7 @@ module RightFlexiscale
     #----------------------------------------
 
     # Loging into the API. Returns +true+ on success.
+    # If _username_ and/or _password_ are not specified then previously defined values are used.
     # 
     # https://api.flexiscale.com/current/doc/login.html
     def login(username=nil, password=nil)
@@ -257,8 +251,8 @@ module RightFlexiscale
     # _List_ is an array of ids.
     #
     #  flexiscale.list_packages #=> 
-    #       [{:fxs_id => 40175, 
-    #         :name   => "rightscale"}]
+    #       [{:fxs_id => 12345, 
+    #         :name   => "package"}]
     #  
     # https://api.flexiscale.com/current/doc/list_packages.html
     def list_packages(*list)
@@ -286,7 +280,7 @@ module RightFlexiscale
     #         :modified           => false,
     #         :status             => "stopped"
     #         :fxs_status         => "5",
-    #         :package_id         => 40175,
+    #         :package_id         => 12345,
     #         :disks              => [2285],
     #         :disk_capacity      => 20480,
     #         :ip_addresses       => ["92.60.121.68"],
@@ -302,7 +296,7 @@ module RightFlexiscale
     # Create a server. Returns a new +server_id+. 
     # (_Memory_ in MB, _disk_capacity_ in GB)
     # 
-    #  flexiscale.create_server('my_awesome_server', 40175, 1, 512, 20, 27, 1552) #=> 1343
+    #  flexiscale.create_server('my_awesome_server', 12345, 1, 512, 20, 27, 1552) #=> 1343
     #
     # https://api.flexiscale.com/current/doc/create_server.html
     def create_server(server_name, package_id, processors, memory, disk_capacity, operating_system_image_id, vlan_id)
@@ -330,7 +324,7 @@ module RightFlexiscale
     #         :modified           => false,
     #         :status             => "stopped"
     #         :fxs_status         => "5",
-    #         :package_id         => 40175,
+    #         :package_id         => 12345,
     #         :disks              => [2285],
     #         :disk_capacity      => 20480,
     #         :ip_addresses       => ["92.60.121.68"],
@@ -426,7 +420,7 @@ module RightFlexiscale
     #          :usage      => 0.03,
     #          :name       => "Server 1322 Operating System",
     #          :locked     => 0,
-    #          :package_id => 40175,
+    #          :package_id => 12345,
     #          :fxs_id     => 2262}, ... ]
     #
     # https://api.flexiscale.com/current/doc/list_disks.html
@@ -445,7 +439,7 @@ module RightFlexiscale
     #
     #  flexiscale.list_jobs #=>
     #        [{:fxs_status  => 2,
-    #          :status      => nil,
+    #          :status      => "completed",
     #          :started_at  => Fri Jun 13 13:21:27 UTC 2008,
     #          :description => "start_virtual_server",
     #          :finished_at => Fri Jun 13 13:23:42 UTC 2008,
@@ -457,7 +451,7 @@ module RightFlexiscale
     # https://api.flexiscale.com/current/doc/list_jobs.html
     def list_jobs(*list)
       perform_request do
-        @api.list_jobs(list.flatten)
+        @api.ListJobs(list.flatten)
       end
     end
 
@@ -497,7 +491,7 @@ module RightFlexiscale
     #  
     #  flexiscale.filter(100, :status, :desc ) #=>
     #        [{:fxs_status  => 2,
-    #          :status      => nil,
+    #          :status      => "completed",
     #          :started_at  => Fri Jun 13 13:21:27 UTC 2008,
     #          :description => "start_virtual_server",
     #          :finished_at => Fri Jun 13 13:23:42 UTC 2008,

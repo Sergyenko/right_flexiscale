@@ -2,9 +2,9 @@ require 'Flexiscale API.rb'
 require 'Flexiscale APIMappingRegistry.rb'
 require 'soap/rpc/driver'
 
-module FlexiScale
+module FlexiScale # :nodoc:
 
-class FlexiScale < ::SOAP::RPC::Driver
+class FlexiScale < ::SOAP::RPC::Driver # :nodoc:
   DefaultEndpointUrl = "https://api.flexiscale.com/0.5/index.php"
   NsApiFlexiscaleCom = "http://api.flexiscale.com"
 

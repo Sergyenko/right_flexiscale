@@ -4,7 +4,8 @@ class TestRightFlexiscale < Test::Unit::TestCase
 
   def setup
     @flexiscale = RightFlexiscale::Api.new(TestFlexiscaleCredentials.username, 
-                                           TestFlexiscaleCredentials.password)
+                                           TestFlexiscaleCredentials.password,
+                                           :skip_logging => true)
     @test_server_name = "right_flexiscale_awesome_test_server_1234567890"
   end
   
@@ -66,6 +67,8 @@ class TestRightFlexiscale < Test::Unit::TestCase
   end
   
   def test_12_list_jobs
+    result = @flexiscale.list_jobs
+    assert result.is_a?(Array)
     #filter_jobs
     #list_running_jobs
   end

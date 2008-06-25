@@ -154,11 +154,11 @@ module FlexiScale
   end
 
   class Job
-    # TODO : find statuses name
-    STATUS_IN_WORDS = { }
+    STATUS_IN_WORDS = { 1 => 'running',
+                        2 => 'completed',
+                        3 => 'failed' }
     def to_handy_hash
-      ::FlexiScale::attrs_to_hash(self, :type_id, :description, :parent_job,
-                                        :notes ).merge(
+      ::FlexiScale::attrs_to_hash(self, :type_id, :description, :parent_job, :notes ).merge(
         :fxs_id      => self.job_id,
         :fxs_status  => self.status,
         :status      => STATUS_IN_WORDS[self.status],

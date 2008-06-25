@@ -6,7 +6,7 @@ module FlexiScale
 # {http://api.flexiscale.com}OperatingSystemImage
 #   operating_system_image_id - SOAP::SOAPInt
 #   operating_system_image_name - SOAP::SOAPString
-class OperatingSystemImage
+class OperatingSystemImage # :nodoc:
   attr_accessor :operating_system_image_id
   attr_accessor :operating_system_image_name
 
@@ -24,7 +24,7 @@ end
 #   server_id - SOAP::SOAPInt
 #   locked - SOAP::SOAPInt
 #   disk_name - SOAP::SOAPString
-class Disk
+class Disk # :nodoc:
   attr_accessor :disk_id
   attr_accessor :package_id
   attr_accessor :capacity
@@ -49,7 +49,7 @@ end
 #   server_id - SOAP::SOAPInt
 #   vlan_id - SOAP::SOAPInt
 #   mac_address - SOAP::SOAPString
-class NetworkInterface
+class NetworkInterface # :nodoc:
   attr_accessor :network_interface_id
   attr_accessor :server_id
   attr_accessor :vlan_id
@@ -69,7 +69,7 @@ end
 #   end_ip - SOAP::SOAPString
 #   block_type - SOAP::SOAPInt
 #   customer_vlan_id - SOAP::SOAPInt
-class IpBlock
+class IpBlock # :nodoc:
   attr_accessor :ip_block_id
   attr_accessor :start_ip
   attr_accessor :end_ip
@@ -89,7 +89,7 @@ end
 #   firewall_id - SOAP::SOAPInt
 #   ip_address - SOAP::SOAPString
 #   default_policy - SOAP::SOAPString
-class Firewall
+class Firewall # :nodoc:
   attr_accessor :firewall_id
   attr_accessor :ip_address
   attr_accessor :default_policy
@@ -105,7 +105,7 @@ end
 #   firewall_template_id - SOAP::SOAPInt
 #   template_name - SOAP::SOAPString
 #   default_policy - SOAP::SOAPString
-class FirewallTemplate
+class FirewallTemplate # :nodoc:
   attr_accessor :firewall_template_id
   attr_accessor :template_name
   attr_accessor :default_policy
@@ -131,7 +131,7 @@ end
 #   ip_address_mask - SOAP::SOAPInt
 #   action - SOAP::SOAPString
 #   jump_to - SOAP::SOAPInt
-class FirewallRule
+class FirewallRule # :nodoc:
   attr_accessor :firewall_rule_id
   attr_accessor :firewall_id
   attr_accessor :sequence_no
@@ -177,7 +177,7 @@ end
 #   ip_address_mask - SOAP::SOAPInt
 #   action - SOAP::SOAPString
 #   jump_to - SOAP::SOAPInt
-class FirewallTemplateRule
+class FirewallTemplateRule # :nodoc:
   attr_accessor :firewall_template_rule_id
   attr_accessor :firewall_template_id
   attr_accessor :sequence_no
@@ -212,7 +212,7 @@ end
 # {http://api.flexiscale.com}IcmpProtocol
 #   icmp_protocol_id - SOAP::SOAPInt
 #   description - SOAP::SOAPString
-class IcmpProtocol
+class IcmpProtocol # :nodoc:
   attr_accessor :icmp_protocol_id
   attr_accessor :description
 
@@ -225,7 +225,7 @@ end
 # {http://api.flexiscale.com}FirewallProtocol
 #   firewall_protocol_id - SOAP::SOAPInt
 #   name - SOAP::SOAPString
-class FirewallProtocol
+class FirewallProtocol # :nodoc:
   attr_accessor :firewall_protocol_id
   attr_accessor :name
 
@@ -238,7 +238,7 @@ end
 # {http://api.flexiscale.com}Vlan
 #   vlan_id - SOAP::SOAPInt
 #   vlan_name - SOAP::SOAPString
-class Vlan
+class Vlan # :nodoc:
   attr_accessor :vlan_id
   attr_accessor :vlan_name
 
@@ -263,7 +263,7 @@ end
 #   uptime - SOAP::SOAPLong
 #   ip_addresses - FlexiScale::ArrayOf_xsd_string
 #   modified - SOAP::SOAPBoolean
-class Server
+class Server # :nodoc:
   attr_accessor :server_id
   attr_accessor :server_name
   attr_accessor :status
@@ -311,7 +311,7 @@ end
 #   description - SOAP::SOAPString
 #   parent_job - SOAP::SOAPInt
 #   notes - SOAP::SOAPString
-class Job
+class Job # :nodoc:
   attr_accessor :job_id
   attr_accessor :type_id
   attr_accessor :status
@@ -336,7 +336,7 @@ end
 # {http://api.flexiscale.com}Package
 #   package_id - SOAP::SOAPInt
 #   package_name - SOAP::SOAPString
-class Package
+class Package # :nodoc:
   attr_accessor :package_id
   attr_accessor :package_name
 
@@ -355,7 +355,7 @@ end
 #   debit_id - SOAP::SOAPInt
 #   description - SOAP::SOAPString
 #   timestamp - SOAP::SOAPString
-class DebitItem
+class DebitItem # :nodoc:
   attr_accessor :debit_item_id
   attr_accessor :item_type
   attr_accessor :type_id
@@ -382,7 +382,7 @@ end
 #   creation_time - SOAP::SOAPString
 #   item_count - SOAP::SOAPInt
 #   item_cost - SOAP::SOAPFloat
-class Debit
+class Debit # :nodoc:
   attr_accessor :debit_id
   attr_accessor :creation_time
   attr_accessor :item_count
@@ -401,7 +401,7 @@ end
 #   credit_date - SOAP::SOAPString
 #   credit_amount - SOAP::SOAPFloat
 #   unused_credit - SOAP::SOAPFloat
-class Credit
+class Credit # :nodoc:
   attr_accessor :credit_id
   attr_accessor :credit_date
   attr_accessor :credit_amount
@@ -420,7 +420,7 @@ end
 #   credit_id - SOAP::SOAPInt
 #   debit_id - SOAP::SOAPInt
 #   amount - SOAP::SOAPFloat
-class CreditDebit
+class CreditDebit # :nodoc:
   attr_accessor :credit_debit_id
   attr_accessor :credit_id
   attr_accessor :debit_id
@@ -435,80 +435,79 @@ class CreditDebit
 end
 
 # {http://api.flexiscale.com}ArrayOf_xsd_int
-class ArrayOf_xsd_int < ::Array
+class ArrayOf_xsd_int < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOf_xsd_string
-class ArrayOf_xsd_string < ::Array
+class ArrayOf_xsd_string < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfServer
-class ArrayOfServer < ::Array
+class ArrayOfServer < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfOperatingSystemImage
-class ArrayOfOperatingSystemImage < ::Array
+class ArrayOfOperatingSystemImage < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfFirewall
-class ArrayOfFirewall < ::Array
+class ArrayOfFirewall < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfFirewallTemplate
-class ArrayOfFirewallTemplate < ::Array
+class ArrayOfFirewallTemplate < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfFirewallRule
-class ArrayOfFirewallRule < ::Array
+class ArrayOfFirewallRule < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfFirewallTemplateRule
-class ArrayOfFirewallTemplateRule < ::Array
+class ArrayOfFirewallTemplateRule < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfIcmpProtocol
-class ArrayOfIcmpProtocol < ::Array
+class ArrayOfIcmpProtocol < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfFirewallProtocol
-class ArrayOfFirewallProtocol < ::Array
+class ArrayOfFirewallProtocol < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfIpBlock
-class ArrayOfIpBlock < ::Array
+class ArrayOfIpBlock < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfVlan
-class ArrayOfVlan < ::Array
+class ArrayOfVlan < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfNetworkInterface
-class ArrayOfNetworkInterface < ::Array
+class ArrayOfNetworkInterface < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfDisk
-class ArrayOfDisk < ::Array
+class ArrayOfDisk < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfJob
-class ArrayOfJob < ::Array
+class ArrayOfJob < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfPackage
-class ArrayOfPackage < ::Array
+class ArrayOfPackage < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfDebitItem
-class ArrayOfDebitItem < ::Array
+class ArrayOfDebitItem < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfDebit
-class ArrayOfDebit < ::Array
+class ArrayOfDebit < ::Array # :nodoc:
 end
 
 # {http://api.flexiscale.com}ArrayOfCredit
-class ArrayOfCredit < ::Array
+class ArrayOfCredit < ::Array # :nodoc:
 end
-
 
 end

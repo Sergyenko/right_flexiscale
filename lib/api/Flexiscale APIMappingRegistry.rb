@@ -1,9 +1,9 @@
 require 'Flexiscale API.rb'
 require 'soap/mapping'
 
-module FlexiScale
+module FlexiScale  # :nodoc:
 
-module FlexiscaleAPIMappingRegistry
+module FlexiscaleAPIMappingRegistry # :nodoc:
   EncodedRegistry = ::SOAP::Mapping::EncodedRegistry.new
   LiteralRegistry = ::SOAP::Mapping::LiteralRegistry.new
   NsApiFlexiscaleCom = "http://api.flexiscale.com"
