@@ -25,12 +25,12 @@ require 'Flexiscale APIDriver'
 require 'Flexiscale APIAddons'
 require 'logger'
 
-module RightFlexiscale
+module Rightscale
   
-  class FxsError < RuntimeError 
+  class FlexiscaleError < RuntimeError 
   end
   
-  class FxsBenchmarkingBlock # :nodoc:
+  class FlexiscaleBenchmarkingBlock # :nodoc:
     attr_accessor :service
     def initialize
       # Benchmark::Tms instance for service (Ec2, S3, or SQS) access benchmarking.
@@ -38,8 +38,8 @@ module RightFlexiscale
     end
   end
 
-  # = RightFlexiscale::Api -- RightScale Flexiscale interface
-  # The RightFlexiscale::Api class provides a complete interface to Flexiscale's
+  # = Rightscale::FlexiscaleApi -- RightScale Flexiscale interface
+  # The Rightscale::FlexiscaleApi class provides a complete interface to Flexiscale's
   # Web service.
   # For explanations of the semantics
   # of each call, please refer to Flexiscale's documentation at
@@ -47,7 +47,7 @@ module RightFlexiscale
   #
   # Examples:
   #
-  #  flexiscale = RightFlexiscale::Api(username, password)
+  #  flexiscale = Rightscale::FlexiscaleApi.new(username, password)
   #  
   #  # get servers list
   #  servers = flexiscale.list_servers
@@ -74,10 +74,10 @@ module RightFlexiscale
   #    flexiscale.destroy_server('my_awesome_server')
   #  end
   #  
-  # Error handling: all operations raise an RightFlexiscale::FxsError in case
+  # Error handling: all operations raise an Rightscale::FlexiscaleError in case
   # of problems.
   #
-  class Api
+  class FlexiscaleApi
     attr_reader :params
     attr_reader :logged_in
     attr_reader :username
@@ -85,7 +85,7 @@ module RightFlexiscale
     attr_reader :api
     attr_reader :last_raw_response
 
-    @@bench = FxsBenchmarkingBlock.new
+    @@bench = FlexiscaleBenchmarkingBlock.new
     def self.bench_service # :nodoc:
       @@bench.service
     end
@@ -106,11 +106,11 @@ module RightFlexiscale
     #            :logger       - logger object (STDOUT is used by default)
     #            :skip_logging - log nothing 
     #
-    #  flexiscale = RightFlexiscale::Api.new(username, password)
+    #  flexiscale = Rightscale::FlexiscaleApi.new(username, password)
     #  flexiscale.list_packages #=> [{:fxs_id => 12345,
     #                                 :name   => "package"}]
     #
-    #  flexiscale = RightFlexiscale::Api.new(username, password, :raw_response=>true) #=> 
+    #  flexiscale = Rightscale::FlexiscaleApi.new(username, password, :raw_response=>true) #=> 
     #  flexiscale.list_packages #=> [#<FlexiScale::Package:0xb78a1904
     #                                  @package_id   = 12345,
     #                                  @package_name = "package">]
@@ -119,7 +119,7 @@ module RightFlexiscale
       @username  = username || ENV['FLEXISCALE_USERNAME']
       @password  = password || ENV['FLEXISCALE_PASSWORD']
       @params    = params
-      # initializationvars
+      # vars initialization
       @params[:logger] ||= Logger.new(STDOUT)
       @logged_in = false
       @last_raw_response = nil
@@ -193,8 +193,8 @@ module RightFlexiscale
           @logged_in = false if e.message[/InvalidCredentials/]
           # Reraise an error ...
           if e.is_a?(SOAP::FaultError)
-            # ... as RightFlexiscale::FxsError
-            fxs_error = FxsError.new(e.message)
+            # ... as Rightscale::FlexiscaleError
+            fxs_error = FlexiscaleError.new(e.message)
             # Create a backtrace stack from a scratch if it is abcent...
             # It does not show the exact point of error but a stack of methods at least.
             # (not sure why but SOAP::FaultError has backtrace empty, may be due to threads usage)
@@ -368,7 +368,8 @@ module RightFlexiscale
     # The response is returned as a integer which is the job number  of the request,
     # this can be looked up using _wait_for_jobs_ and _list_jobs_.
     # 
-    #  - method:  (:shutdown || RightFlexiscale::SERVER_STOP_SHUTDOWN) || (:poweroff || RightFlexiscale::SERVER_STOP_POWEROFF)
+    #  - method:  (:shutdown || Rightscale::FlexiscaleApi::SERVER_STOP_SHUTDOWN) ||
+    #             (:poweroff || Rightscale::FlexiscaleApi::SERVER_STOP_POWEROFF)
     #             
     #  flexiscale.stop_server('my_awesome_server') #=> 11036
     #  
