@@ -697,7 +697,6 @@ module Rightscale
     end
 
     # List firewall templates.
-    # (_List_ DOES NOT WORK)
     #
     #  flexiscale.list_firewall_templates #=>
     #        [{:fxs_id=>1, :name=>"Linux Web Server",   :default_policy=>"REJECT"},

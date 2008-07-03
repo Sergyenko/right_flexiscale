@@ -12,7 +12,7 @@ FIX (describe your package)
 
 == SYNOPSIS:
 
-  flexiscale = RightFlexiscale::Api(username, password)
+  flexiscale = Rightscale::FlexiscaleApi.new(username, password)
   
   # get servers list
   servers = flexiscale.list_servers
