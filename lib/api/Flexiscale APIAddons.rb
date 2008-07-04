@@ -65,9 +65,8 @@ module FlexiScale
 
   class IpBlock
     def to_handy_hash
-      ::FlexiScale::attrs_to_hash(self, :customer_vlan_id, :end_ip, :start_ip).merge(
-        :fxs_id => self.ip_block_id,
-        :type   => self.block_type
+      ::FlexiScale::attrs_to_hash(self, :customer_vlan_id, :end_ip, :start_ip, :block_type).merge(
+        :fxs_id => self.ip_block_id
       )
     end
   end
@@ -163,7 +162,7 @@ module FlexiScale
         :fxs_status  => self.status,
         :status      => STATUS_IN_WORDS[self.status],
         :started_at  => self.started.to_utc_time,
-        :finished_at => self.finished.to_utc_time
+        :finished_at => self.finished ? self.finished.to_utc_time : nil
       )
     end
   end

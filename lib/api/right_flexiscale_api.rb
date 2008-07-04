@@ -570,7 +570,7 @@ module Rightscale
     # _List_ is an array of ids.
     # 
     #  flexiscale.list_ip_blocks #=>
-    #        [{:type             => 29,
+    #        [{:block_type       => 29,
     #          :end_ip           => "92.60.120.70",
     #          :fxs_id           => 404,
     #          :customer_vlan_id => 552,
