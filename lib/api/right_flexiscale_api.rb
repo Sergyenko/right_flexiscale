@@ -26,7 +26,7 @@ require 'Flexiscale APIAddons'
 require 'logger'
 
 module Rightscale
-  
+
   class FlexiscaleError < RuntimeError 
   end
   
@@ -38,6 +38,84 @@ module Rightscale
     end
   end
 
+  # Simple connection errors handler
+  class FlexiscaleConnectionHandler # :nodoc:
+    # Number of times to retry the request after encountering the first error
+    HTTP_CONNECTION_RETRY_COUNT = 3   
+    # Length of the post-error probationary period during which all requests will fail 
+    HTTP_CONNECTION_RETRY_DELAY = 15  
+
+    @@params = { :http_connection_retry_count => HTTP_CONNECTION_RETRY_COUNT,
+                 :http_connection_retry_delay => HTTP_CONNECTION_RETRY_DELAY,
+                 :exception                   => FlexiscaleError,
+                 :retriable_errors            => [ 'Timeout::Error',
+                                                   'Errno::ECONNREFUSED', 
+                                                   'Errno::ETIMEDOUT', 
+                                                   'OpenSSL::SSL::SSLError' ] }
+               
+    @@errors = []
+    
+    def self.reset_errors
+      @@errors = []
+    end
+    
+    def self.add_retriable_error(exception)
+      @@errors << [Time.now.utc, exception]
+    end
+    
+    def self.errors_count
+      @@errors.size
+    end
+    
+    def self.last_error
+      @@errors.empty? ? nil : @@errors.last.last
+    end
+    
+    def self.last_error_time
+      @@errors.empty? ? nil : @@errors.last.first
+    end
+    
+    # Check the amount of connection errors and raise if it exceeds max value
+    def self.check_retries_and_raise_if_required
+      if errors_count > @@params[:http_connection_retry_count] && 
+         last_error_time + @@params[:http_connection_retry_delay] > Time.now
+        warning = ("Re-raising same error: #{last_error.message} " +
+                   "-- error count: #{errors_count}, error age: #{Time.now.to_i - @@errors.first.first.to_i}")  
+        #
+        yield(warning) if block_given?
+        #
+        exception = @@params[:exception] ? @@params[:exception].new(last_error.message) : last_error
+        raise exception
+      end
+    end  
+    
+    # Perform a retry on low level (connection) errors or raise on high level (flexiscale API)
+    def self.process_exception(e = nil)
+      e ||= $!
+      if @@params[:retriable_errors].include?(e.class.name)
+        add_retriable_error(e)
+        yield(e, "#{self.last_error.class.name}: request failure count: #{self.errors_count}, exception: '#{e.message}'")
+      elsif e.is_a?(Interrupt)
+        # raise Interrupt guys: Ctrl/C etc.
+        # PS I check for Interrupt after :retriable_errors check just because some of :retriable_errors list are also
+        # Interrupt guys (Timeouts for example). So we break only if the interrupt is not in :retriable_errors list.
+        raise e
+      else
+        # Convert SOAP::FaultError to Rightscale::FlexiscaleError
+        if e.is_a?(SOAP::FaultError)
+          e = FlexiscaleError.new(e.message)
+          # Create a backtrace stack from a scratch if it is abcent...
+          # It does not show the exact point of error but a stack of methods at least.
+          # (not sure why but SOAP::FaultError has backtrace empty, may be due to threads usage)
+          e.set_backtrace(caller(0)) unless e.backtrace && !e.backtrace.empty?
+          # log and raise error
+        end
+        yield(e, false) if block_given?
+        raise e
+      end
+    end
+  end
+  
   # = Rightscale::FlexiscaleApi -- RightScale Flexiscale interface
   # The Rightscale::FlexiscaleApi class provides a complete interface to Flexiscale's
   # Web service.
@@ -155,65 +233,57 @@ module Rightscale
       @api.login(@username, @password)
       @logged_in = true
     end  
-    
+      
     # Request Flexiscale. 
     # Performs a retry on login problems (timeouts etc).
-    #  - params:  :block    - block of code (is used when retry) 
-    #             :no_retry - do not retry on error
-    #             :no_login - do not auto login
+    #  - params:   :no_login - do not auto login
     #
     def perform_request(params={}, &block) # :nodoc:
-      result = nil
-      # block is passed as param on retry
-      block ||= params[:block]
-      # perform a request
-      begin
-        # login if required
-        if !params[:no_login] && !@logged_in
-          @@bench.service.add! do
-            internal_login 
-          end
+      loop do
+        result = nil
+        # Check retries count. And raise an exception if we run into permanent failure
+        # Block is called before exception to log an event. 
+        FlexiscaleConnectionHandler.check_retries_and_raise_if_required do |warning|
+          log warning, :warn
         end
-        # call the block of code is passed
-        if block
-          @@bench.service.add! do
-            result = @last_raw_response = block.call
+        # perform a request
+        begin
+          # login if required
+          if !params[:no_login] && !@logged_in
+            @@bench.service.add! do
+              internal_login 
+            end
           end
-        end
-      rescue Exception => e
-        # Repeat the request if we run into 'not logged in' message
-        # (This may happen when @logged_in==true and timeouts etc...
-        #  Actually I did not run into this but ...)
-        if e.message[/Your credentials are unsuitable or missing/] && !params[:no_retry] 
-          log "Unsuitable credentials: will try to relogin and rerequest..."
-          @logged_in = false
-          result     = perform_request(:no_retry=>true, :block=>block)
-        else
-          # Check InvalidCredentials case
-          @logged_in = false if e.message[/InvalidCredentials/]
-          # Reraise an error ...
-          if e.is_a?(SOAP::FaultError)
-            # ... as Rightscale::FlexiscaleError
-            fxs_error = FlexiscaleError.new(e.message)
-            # Create a backtrace stack from a scratch if it is abcent...
-            # It does not show the exact point of error but a stack of methods at least.
-            # (not sure why but SOAP::FaultError has backtrace empty, may be due to threads usage)
-            fxs_error.set_backtrace(caller(0)) unless fxs_error.backtrace && !fxs_error.backtrace.empty?
-            # log and raise error
-            log_error fxs_error
-            raise fxs_error
-          else
-            # ... as is
-            log_error e
-            raise e
+          # call the block of code is passed
+          if block
+            @@bench.service.add! do
+              result = @last_raw_response = block.call
+            end
+          end
+          # reset errors list
+          FlexiscaleConnectionHandler.reset_errors
+          # convert a result to a handy format
+          if result.class.name[/^FlexiScale::/] && !@params[:raw_response]
+            result = result.to_handy_hash
+          end
+          return result
+          
+        rescue Exception => exception
+          # Log the errors we got and increaze the errors count.
+          # +retriable_message+ is set when we get a low level connection error (and retry is to be performed).
+          # If +retriable_message+ is not set - the err is a high level one and it will be reraised as FlexiscaleError.
+          # Any case the block of code is used just to log an event.
+          FlexiscaleConnectionHandler.process_exception(exception) do |e, retriable_message|
+            if retriable_message
+              log retriable_message, :warn
+            else
+              # Check InvalidCredentials case
+              @logged_in = false if e.message[/InvalidCredentials/]
+              log_error e
+            end
           end
         end
       end
-      # convert a result to a handy format
-      if result.class.name[/^FlexiScale::/] && !@params[:raw_response]
-        result = result.to_handy_hash
-      end
-      result
     end
 
     #----------------------------------------
@@ -233,7 +303,7 @@ module Rightscale
       @username  = username if username
       @password  = password if password
       # without a block perform_request just logs in
-      perform_request(:no_retry=>true)
+      perform_request
       true
     end  
 
