@@ -39,7 +39,7 @@ module Rightscale
   end
 
   # Simple connection errors handler
-  class FlexiscaleConnectionHandler # :nodoc:
+  class FlexiscaleConnectionHandler
     # Number of times to retry the request after encountering the first error
     HTTP_CONNECTION_RETRY_COUNT = 3   
     # Length of the post-error probationary period during which all requests will fail 
@@ -52,31 +52,41 @@ module Rightscale
                                                    'Errno::ECONNREFUSED', 
                                                    'Errno::ETIMEDOUT', 
                                                    'OpenSSL::SSL::SSLError' ] }
-               
+    # Params accessor:
+    #
+    #  Rightscale::FlexiscaleConnectionHandler.params[:http_connection_retry_count] = 5
+    #  Rightscale::FlexiscaleConnectionHandler.params[:retriable_errors] << 'MyAwesomeExceptionClassName'
+    #
+    def self.params
+      @@params
+    end
+    
+  private  
+
     @@errors = []
     
-    def self.reset_errors
+    def self.reset_errors # :nodoc:
       @@errors = []
     end
     
-    def self.add_retriable_error(exception)
+    def self.add_retriable_error(exception) # :nodoc:
       @@errors << [Time.now.utc, exception]
     end
     
-    def self.errors_count
+    def self.errors_count # :nodoc:
       @@errors.size
     end
     
-    def self.last_error
+    def self.last_error # :nodoc:
       @@errors.empty? ? nil : @@errors.last.last
     end
     
-    def self.last_error_time
+    def self.last_error_time # :nodoc:
       @@errors.empty? ? nil : @@errors.last.first
     end
-    
+  
     # Check the amount of connection errors and raise if it exceeds max value
-    def self.check_retries_and_raise_if_required
+    def self.check_retries_and_raise_if_required # :nodoc:
       if errors_count > @@params[:http_connection_retry_count] && 
          last_error_time + @@params[:http_connection_retry_delay] > Time.now
         warning = ("Re-raising same error: #{last_error.message} " +
@@ -90,7 +100,7 @@ module Rightscale
     end  
     
     # Perform a retry on low level (connection) errors or raise on high level (flexiscale API)
-    def self.process_exception(e = nil)
+    def self.process_exception(e = nil) # :nodoc:
       e ||= $!
       if @@params[:retriable_errors].include?(e.class.name)
         add_retriable_error(e)
