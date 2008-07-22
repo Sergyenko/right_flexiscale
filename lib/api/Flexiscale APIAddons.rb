@@ -144,7 +144,7 @@ module FlexiScale
         :fxs_id     => self.server_id,
         :name       => self.server_name,
         :fxs_status => self.status,
-        :status     => STATUS_IN_WORDS[self.status],
+#        :status     => STATUS_IN_WORDS[self.status],
         :image_id   => self.operating_system_image.operating_system_image_id,
         :image_name => self.operating_system_image.operating_system_image_name,
         :initial_password => self.initial_password.chop
