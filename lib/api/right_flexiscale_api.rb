@@ -51,7 +51,9 @@ module Rightscale
                  :retriable_errors            => [ 'Timeout::Error',
                                                    'Errno::ECONNREFUSED', 
                                                    'Errno::ETIMEDOUT', 
-                                                   'OpenSSL::SSL::SSLError' ] }
+                                                   'OpenSSL::SSL::SSLError',
+                                                   'SocketError' ]
+               }
     # Params accessor:
     #
     #  Rightscale::FlexiscaleConnectionHandler.params[:http_connection_retry_count] = 5
@@ -84,10 +86,17 @@ module Rightscale
     def self.last_error_time # :nodoc:
       @@errors.empty? ? nil : @@errors.last.first
     end
+
+    # Error is assumed as retriable if it's class name is equal to error message or
+    # error message includes on of @@params[:retriable_errors] stamps
+    def self.is_error_retriable?(e) # :nodoc:
+      @@params[:retriable_errors].include?(e.class.name) ||
+      @@params[:retriable_errors].find { |partial_message| e.message[/#{partial_message}/] }
+    end
   
     # Check the amount of connection errors and raise if it exceeds max value
     def self.check_retries_and_raise_if_required # :nodoc:
-      if errors_count > @@params[:http_connection_retry_count] && 
+      if errors_count >= @@params[:http_connection_retry_count] &&
          last_error_time + @@params[:http_connection_retry_delay] > Time.now
         warning = ("Re-raising same error: #{last_error.message} " +
                    "-- error count: #{errors_count}, error age: #{Time.now.to_i - @@errors.first.first.to_i}")  
@@ -102,7 +111,7 @@ module Rightscale
     # Perform a retry on low level (connection) errors or raise on high level (flexiscale API)
     def self.process_exception(e = nil) # :nodoc:
       e ||= $!
-      if @@params[:retriable_errors].include?(e.class.name)
+      if is_error_retriable?(e)
         add_retriable_error(e)
         yield(e, "#{self.last_error.class.name}: request failure count: #{self.errors_count}, exception: '#{e.message}'")
       elsif e.is_a?(Interrupt)

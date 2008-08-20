@@ -1,5 +1,6 @@
 Exception: #<Errno::ECONNREFUSED: Connection refused - connect(2) (https://api.flexiscale.com:443)>
 Exception: #<OpenSSL::SSL::SSLError: certificate verify failed>
+Exception: #<SocketError: getaddrinfo: Name or service not known (https://api.flexiscale.com:443)>
 
 execution expired (Timeout::Error)
         
