@@ -52,7 +52,9 @@ module Rightscale
                                                    'Errno::ECONNREFUSED', 
                                                    'Errno::ETIMEDOUT', 
                                                    'OpenSSL::SSL::SSLError',
-                                                   'SocketError' ]
+                                                   'SocketError' ],
+                 :relogin_on_errors           => [ 'InvalidCredentials',
+                                                   'Credentials are invalid or missing']
                }
     # Params accessor:
     #
@@ -93,7 +95,12 @@ module Rightscale
       @@params[:retriable_errors].include?(e.class.name) ||
       @@params[:retriable_errors].find { |partial_message| e.message[/#{partial_message}/] }
     end
-  
+
+    def self.is_relogin_error?(e) # :nodoc:
+      @@params[:relogin_on_errors].include?(e.class.name) ||
+      @@params[:relogin_on_errors].find { |partial_message| e.message[/#{partial_message}/] }
+    end
+
     # Check the amount of connection errors and raise if it exceeds max value
     def self.check_retries_and_raise_if_required # :nodoc:
       if errors_count >= @@params[:http_connection_retry_count] &&
@@ -111,9 +118,9 @@ module Rightscale
     # Perform a retry on low level (connection) errors or raise on high level (flexiscale API)
     def self.process_exception(e = nil) # :nodoc:
       e ||= $!
-      if is_error_retriable?(e)
+      if is_error_retriable?(e) || is_relogin_error?(e)
         add_retriable_error(e)
-        yield(e, "#{self.last_error.class.name}: request failure count: #{self.errors_count}, exception: '#{e.message}'")
+        yield(e, "#{self.last_error.class.name}: request failure count: #{self.errors_count}, exception: '#{e.message}'") if block_given?
       elsif e.is_a?(Interrupt)
         # raise Interrupt guys: Ctrl/C etc.
         # PS I check for Interrupt after :retriable_errors check just because some of :retriable_errors list are also
@@ -270,7 +277,7 @@ module Rightscale
           # login if required
           if !params[:no_login] && !@logged_in
             @@bench.service.add! do
-              internal_login 
+              internal_login
             end
           end
           # call the block of code is passed
@@ -293,12 +300,10 @@ module Rightscale
           # If +retriable_message+ is not set - the err is a high level one and it will be reraised as FlexiscaleError.
           # Any case the block of code is used just to log an event.
           FlexiscaleConnectionHandler.process_exception(exception) do |e, retriable_message|
-            if retriable_message
-              log retriable_message, :warn
-            else
-              # Check InvalidCredentials case
-              @logged_in = false if e.message[/InvalidCredentials/]
-              log_error e
+            log(retriable_message, :warn) if retriable_message
+            if FlexiscaleConnectionHandler.is_relogin_error?(e)
+              @logged_in = false
+              log('Internal logout performed.', :warn)
             end
           end
         end
