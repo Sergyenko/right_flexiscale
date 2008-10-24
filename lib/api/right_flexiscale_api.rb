@@ -54,7 +54,7 @@ module Rightscale
                                                    'OpenSSL::SSL::SSLError',
                                                    'SocketError' ],
                  :relogin_on_errors           => [ 'InvalidCredentials',
-                                                   'Credentials are invalid or missing']
+                                                   'Your credentials are unsuitable or missing']
                }
     # Params accessor:
     #
