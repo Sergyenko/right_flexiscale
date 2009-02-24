@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2008 RightScale Inc
+# Copyright (c) 2008-2009 RightScale Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -34,8 +34,8 @@ require 'api/right_flexiscale_api'
 module RightFlexiscale
   module VERSION #:nodoc:
     MAJOR = 0
-    MINOR = 0
-    TINY  = 1
+    MINOR = 1
+    TINY  = 0
     
     STRING = [MAJOR, MINOR, TINY].join('.')
   end

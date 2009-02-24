@@ -1,4 +1,3 @@
-# -*- ruby -*-
 
 require 'rubygems'
 require 'hoe'
@@ -9,22 +8,29 @@ require 'lib/right_flexiscale.rb'
 
 testglobs =     []
 
-
 # Suppress Hoe's self-inclusion as a dependency for our Gem.  This also keeps
 # Rake & rubyforge out of the dependency list.  Users must manually install
 # these gems to run tests, etc.
+# TRB 2/19/09: also do this for the extra_dev_deps array present in newer hoes.
+# Older versions of RubyGems will try to install developer-dependencies as
+# required runtime dependencies....
 class Hoe
   def extra_deps
     @extra_deps.reject do |x|
       Array(x).first == 'hoe'
     end
   end
+  def extra_dev_deps
+    @extra_dev_deps.reject do |x|
+      Array(x).first == 'hoe'
+    end
+  end
 end
 
 Hoe.new('right_flexiscale', RightFlexiscale::VERSION::STRING) do |p|
-  p.rubyforge_name = 'rightflexiscale'
+  p.rubyforge_name = 'rightscale'
   p.author = 'RightScale, Inc.'
-  p.email = 'support@rightscale.com'
+  p.email = 'rubygems@rightscale.com'
   p.summary = 'Interface classes for the FlexiScale Web Services'
   p.description = p.paragraphs_of('README.txt', 2..5).join("\n\n")
   p.url = p.paragraphs_of('README.txt', 0).first.split(/\n/)[1..-1]

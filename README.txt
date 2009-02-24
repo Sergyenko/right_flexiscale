@@ -1,14 +1,19 @@
-= right_flexiscale
+== RightScale Flexiscale API Ruby Gem
 
-* FIX (url)
+Published by RightScale, Inc. under the MIT License. For information about
+RightScale, see www.rightscale.com 
 
 == DESCRIPTION:
 
-FIX (describe your package)
+The RightScale GoGrid gem has been designed to provide a robust interface to
+Flexiscale‘s existing API. 
+
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+    * Full programmatic access to the Flexiscale API.
+    * Complete error handling: all operations check for errors and report
+      complete error information.
 
 == SYNOPSIS:
 
@@ -45,11 +50,11 @@ FIX (describe your package)
 
 == INSTALL:
 
-* gem install right_flexiscale
+* sudo gem install right_flexiscale
 
 == LICENSE:
 
-Copyright (c) 2008 RightScale Inc
+Copyright (c) 2008-2009 RightScale Inc
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
